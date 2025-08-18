@@ -106,10 +106,10 @@ function AccountSettings({ user }) {
   };
 
   const tabs = [
-    { id: "profile", label: "👤 Profile", icon: "👤" },
-    { id: "security", label: "🔒 Security", icon: "🔒" },
-    { id: "preferences", label: "⚙️ Preferences", icon: "⚙️" },
-    { id: "cards", label: "💳 Cards", icon: "💳" }
+    { id: "profile", label: "Profile", icon: "👤" },
+    { id: "security", label: "Security", icon: "🔒" },
+    { id: "preferences", label: "Preferences", icon: "⚙️" },
+    { id: "cards", label: "Cards", icon: "💳" }
   ];
 
   return (
