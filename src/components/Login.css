@@ -1,100 +1,237 @@
 .login-container {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-    padding: 1rem;
+  min-height: 100vh;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--gradient-primary);
+  padding: 0;
+  position: relative;
+  overflow: hidden; /* This makes only the login/register page unscrollable */
+}
+
+.login-container::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+  animation: float 20s linear infinite;
+}
+
+@keyframes float {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.login-card {
+  background: var(--bg-card);
+  backdrop-filter: blur(20px);
+  border-radius: 1.25rem;
+  padding: 1.2rem 2.2rem;      /* Less vertical, comfortable horizontal */
+  box-shadow: var(--shadow-xl);
+  width: 100%;
+  max-width: 420px;            /* Comfortable width */
+  min-width: 300px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+  z-index: 1;
+  animation: slideIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.9);
   }
-  
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 1rem;         /* Less vertical space */
+}
+
+.login-header h1 {
+  font-size: 1.3rem;           /* Smaller header */
+  margin-bottom: 0.3rem;
+}
+
+.login-header p {
+  font-size: 1rem;
+  margin-bottom: 0.2rem;
+}
+
+.login-form {
+  margin-bottom: 0.7rem;       /* Less space below form */
+}
+
+.form-group {
+  margin-bottom: 0.7rem;       /* Less space between fields */
+}
+
+.form-label {
+  margin-bottom: 0.3rem;
+  font-size: 0.95rem;
+}
+
+.form-input {
+  padding: 0.6rem 1rem;        /* Less vertical padding */
+  border-radius: 0.75rem;
+  font-size: 1rem;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+  transform: translateY(-2px);
+}
+
+.form-input::placeholder {
+  color: var(--text-tertiary);
+}
+
+.login-btn,
+.biometric-btn {
+  padding: 0.7rem;             /* Less vertical padding */
+  font-size: 1rem;
+  margin-top: 0.5rem;
+  border-radius: 0.75rem;
+  background: var(--gradient-primary);
+  color: white;
+  border: none;
+  transition: box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  /* Remove background change on hover */
+}
+
+.login-btn:hover,
+.biometric-btn:hover {
+  /* Only add a subtle shadow and lift, no color change */
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+  background: var(--gradient-primary); /* Ensures color stays the same */
+}
+
+.login-btn::before,
+.biometric-btn::before {
+  display: none !important; /* Remove the expanding white circle effect */
+}
+
+.login-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.divider {
+  text-align: center;
+  margin: 0.7rem 0;            /* Less vertical space */
+  position: relative;
+  color: var(--text-secondary);
+}
+
+.divider::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--border-color), transparent);
+}
+
+.divider span {
+  background: var(--bg-card);
+  padding: 0 1.5rem;
+  position: relative;
+  font-weight: 500;
+}
+
+.biometric-btn {
+  width: 100%;
+  padding: 1.25rem;
+  font-size: 1.1rem;
+  background: var(--bg-secondary);
+  border: 2px solid var(--border-color);
+  border-radius: 1rem;
+  color: var(--text-primary);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.biometric-btn:hover {
+  background: var(--bg-tertiary);
+  border-color: var(--border-hover);
+  transform: translateY(-2px);
+}
+
+.biometric-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.login-footer {
+  text-align: center;
+  margin-top: 1rem;            /* Less space above footer */
+  color: var(--text-secondary);
+}
+
+.login-footer p {
+  margin-bottom: 0.5rem;
+}
+
+.link-btn {
+  background: none;
+  border: none;
+  color: var(--primary-color);
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  font-size: 1rem;
+}
+
+.link-btn:hover {
+  color: var(--primary-hover);
+  text-decoration: underline;
+}
+
+.demo-credentials {
+  text-align: center;
+  margin-top: 1rem;            /* Less space above demo info */
+  padding: 1rem;
+  background: var(--bg-secondary);
+  border-radius: 1rem;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+}
+
+.demo-credentials small {
+  font-weight: 500;
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
   .login-card {
-    background: var(--bg-card);
+    padding: 2rem;
     border-radius: 1.5rem;
-    padding: 2.5rem;
-    box-shadow: var(--shadow-lg);
-    width: 100%;
-    max-width: 400px;
-    border: 1px solid var(--border-color);
   }
-  
-  .login-header {
-    text-align: center;
-    margin-bottom: 2rem;
-  }
-  
+
   .login-header h1 {
     font-size: 2rem;
-    font-weight: 700;
-    color: var(--text-primary);
-    margin-bottom: 0.5rem;
   }
-  
-  .login-header p {
-    color: var(--text-secondary);
-    font-size: 1.1rem;
-  }
-  
-  .login-form {
-    margin-bottom: 1.5rem;
-  }
-  
-  .login-btn {
-    width: 100%;
-    padding: 1rem;
-    font-size: 1.1rem;
-    margin-top: 1rem;
-  }
-  
-  .divider {
-    text-align: center;
-    margin: 1.5rem 0;
-    position: relative;
-    color: var(--text-secondary);
-  }
-  
-  .divider::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: var(--border-color);
-  }
-  
-  .divider span {
-    background: var(--bg-card);
-    padding: 0 1rem;
-    position: relative;
-  }
-  
+
+  .login-btn,
   .biometric-btn {
-    width: 100%;
     padding: 1rem;
-    font-size: 1.1rem;
+    font-size: 1rem;
   }
-  
-  .login-footer {
-    text-align: center;
-    margin-top: 2rem;
-    color: var(--text-secondary);
-  }
-  
-  .link-btn {
-    background: none;
-    border: none;
-    color: var(--primary-color);
-    font-weight: 600;
-    cursor: pointer;
-    text-decoration: underline;
-    margin-left: 0.5rem;
-  }
-  
-  .demo-credentials {
-    text-align: center;
-    margin-top: 1rem;
-    padding: 1rem;
-    background: var(--bg-secondary);
-    border-radius: 0.5rem;
-    color: var(--text-secondary);
-  }
+}

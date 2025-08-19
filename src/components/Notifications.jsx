@@ -1,5 +1,6 @@
+/* src/components/Notifications.jsx */
 import React, { useState, useEffect } from "react";
-import "./Notifications.css"; // Optional if you want further notification-specific tweaks
+import "./Notifications.css";
 
 function Notifications() {
   const [notifications, setNotifications] = useState([]);
@@ -122,29 +123,27 @@ function Notifications() {
   };
 
   return (
-    <div className="card" style={{ maxWidth: 600, margin: "2rem auto" }}>
-      <div className="notifications-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-          <h1 style={{ fontSize: "1.4em", color: "var(--primary-color)" }}>🔔 Notifications</h1>
+    <div className="notifications-container">
+      {/* Header */}
+      <div className="notifications-header">
+        <div className="header-left">
+          <h1 className="notifications-title">
+            🔔 Notifications
+          </h1>
           {unreadCount > 0 && (
-            <span className="unread-badge" style={{
-              background: "var(--secondary-color)",
-              color: "#fff",
-              padding: "0.3rem 0.8rem",
-              borderRadius: "1rem",
-              fontWeight: "600",
-              fontSize: "1em"
-            }}>{unreadCount} unread</span>
+            <span className="unread-badge">
+              {unreadCount} unread
+            </span>
           )}
         </div>
-        <div style={{ display: "flex", gap: "0.7rem", alignItems: "center" }}>
+        <div className="header-actions">
           <button
             onClick={fetchNotifications}
             className="btn btn-secondary"
             disabled={loading}
-            style={{ minWidth: 90 }}
           >
-            {loading ? <div className="loading"></div> : "🔄 Refresh"}
+            {loading ? <div className="loading"></div> : "🔄"}
+            Refresh
           </button>
           {unreadCount > 0 && (
             <button
@@ -165,81 +164,63 @@ function Notifications() {
         </div>
       </div>
 
-      <div className="notifications-filter" style={{ display: "flex", gap: "0.5rem", marginBottom: "1.2rem" }}>
-        {["all", "unread", "transaction", "security", "account", "promotion"].map(ftype =>
+      {/* Filter Buttons */}
+      <div className="notifications-filter">
+        {["all", "unread", "transaction", "security", "account", "promotion"].map(ftype => (
           <button
             key={ftype}
-            className={`btn ${filter === ftype ? "btn-primary" : ""}`}
-            style={{
-              background: filter === ftype ? "var(--primary-color)" : "var(--bg-secondary)",
-              color: filter === ftype ? "#fff" : "var(--text-secondary)",
-              fontWeight: "500"
-            }}
+            className={`filter-btn ${filter === ftype ? "active" : ""}`}
             onClick={() => setFilter(ftype)}
           >
             {ftype.charAt(0).toUpperCase() + ftype.slice(1)}
           </button>
-        )}
+        ))}
       </div>
 
-      <div className="notifications-list" style={{ marginTop: 12 }}>
+      {/* Notifications List */}
+      <div className="notifications-list">
         {filteredNotifications.length === 0 && (
-          <div className="no-notifications" style={{ textAlign: "center", color: "var(--text-secondary)", margin: "2rem 0" }}>No notifications found.</div>
+          <div className="no-notifications">
+            <div className="no-notifications-icon">📭</div>
+            <h3>No notifications found</h3>
+            <p>There are no notifications for the selected filter.</p>
+          </div>
         )}
 
         {filteredNotifications.map(notif => (
           <div
             key={notif.id}
-            className="notification-item card"
-            style={{
-              display: "flex",
-              alignItems: "flex-start",
-              marginBottom: "1rem",
-              padding: "1.1rem",
-              boxShadow: "var(--shadow)"
-            }}
+            className={`notification-item ${!notif.read ? 'unread' : ''} ${notif.priority === 'high' ? 'high-priority' : ''}`}
           >
-            <span
-              style={{
-                background: getTypeColor(notif.type),
-                color: "#fff",
-                borderRadius: "0.8rem",
-                width: "42px",
-                height: "42px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: "1.7em",
-                marginRight: "1.1rem",
-                flexShrink: 0
-              }}
-              title={notif.type}
+            <div
+              className="notif-icon"
+              style={{ background: getTypeColor(notif.type) }}
             >
               {notif.icon}
-            </span>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontWeight: "600", fontSize: "1.06em", color: "var(--text-primary)" }}>
-                {notif.title}
-              </div>
-              <div style={{ color: "var(--text-secondary)", marginBottom: "8px" }}>{notif.message}</div>
-              <div style={{ display: "flex", gap: "0.7rem", fontSize: "0.93em", alignItems: "center" }}>
-                <span style={{ color: "#999" }}>{notif.time}</span>
-                {!notif.read && (
+            </div>
+            
+            <div className="notif-content">
+              <div className="notif-title">{notif.title}</div>
+              <div className="notif-message">{notif.message}</div>
+              
+              <div className="notif-footer">
+                <span className="notif-time">{notif.time}</span>
+                <div className="notif-actions">
+                  {!notif.read && (
+                    <button
+                      className="notif-action"
+                      onClick={() => markAsRead(notif.id)}
+                    >
+                      Mark as read
+                    </button>
+                  )}
                   <button
-                    className="btn btn-secondary"
-                    style={{ padding: "0.35rem 0.8rem", fontSize: "0.92em" }}
-                    onClick={() => markAsRead(notif.id)}
+                    className="notif-action delete"
+                    onClick={() => deleteNotification(notif.id)}
                   >
-                    Mark as read
+                    Delete
                   </button>
-                )}
-                <button
-                  className="btn btn-danger"
-                  style={{ padding: "0.35rem 0.8rem", fontSize: "0.92em" }}
-                  onClick={() => deleteNotification(notif.id)}
-                >
-                  Delete
-                </button>
+                </div>
               </div>
             </div>
           </div>

@@ -1,54 +1,89 @@
-// import React, { useState } from "react";
-// function Register({ setPage }) {
-//   const [form, setForm] = useState({ name: "", email: "", username: "", password: "" });
-//   const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
-//   const handleSubmit = async e => {
-//     e.preventDefault();
-//     let res = await fetch("http://localhost:5000/api/register", {
-//       method: "POST",
-//       headers: {"Content-Type": "application/json"},
-//       body: JSON.stringify(form)
-//     });
-//     let data = await res.json();
-//     alert(data.message);
-//     if (res.ok) setPage("login");
-//   };
-//   return (
-//     <form onSubmit={handleSubmit}>
-//       <input name="name" placeholder="Name" onChange={handleChange} /><br />
-//       <input name="email" placeholder="Email" onChange={handleChange} /><br />
-//       <input name="username" placeholder="Username" onChange={handleChange} /><br />
-//       <input name="password" type="password" placeholder="Password" onChange={handleChange} /><br />
-//       <button type="submit">Register</button>
-//       <button type="button" onClick={() => setPage("login")}>Back to Login</button>
-//     </form>
-//   );
-// }
-// export default Register;
-
-
+// ... existing imports ...
 import React, { useState } from "react";
+import "./Login.css"; // Reuse the login styles
 
 function Register({ setPage }) {
   const [form, setForm] = useState({ name: "", email: "", username: "", password: "" });
-  
+  const [loading, setLoading] = useState(false);
+
   const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
-  
+
   const handleSubmit = e => {
     e.preventDefault();
-    alert("Registration bypassed for demo!");
-    setPage("login");
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      alert("Registration bypassed for demo!");
+      setPage("login");
+    }, 1500);
   };
-  
+
   return (
-    <form onSubmit={handleSubmit}>
-      <input name="name" placeholder="Name" onChange={handleChange} required /><br />
-      <input name="email" placeholder="Email" onChange={handleChange} required /><br />
-      <input name="username" placeholder="Username" onChange={handleChange} required /><br />
-      <input name="password" type="password" placeholder="Password" onChange={handleChange} required /><br />
-      <button type="submit">Register</button>
-      <button type="button" onClick={() => setPage("login")}>Back to Login</button>
-    </form>
+    <div className="login-container">
+      <div className="login-card">
+        <div className="login-header">
+          <h1>🏦 Modern Bank</h1>
+          <p>Create your account</p>
+        </div>
+        <form onSubmit={handleSubmit} className="login-form">
+          <div className="form-group">
+            <label className="form-label">Name</label>
+            <input
+              name="name"
+              className="form-input"
+              placeholder="Enter your name"
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label className="form-label">Email</label>
+            <input
+              name="email"
+              type="email"
+              className="form-input"
+              placeholder="Enter your email"
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label className="form-label">Username</label>
+            <input
+              name="username"
+              className="form-input"
+              placeholder="Choose a username"
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label className="form-label">Password</label>
+            <input
+              name="password"
+              type="password"
+              className="form-input"
+              placeholder="Create a password"
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <button type="submit" className="btn btn-primary login-btn" disabled={loading}>
+            {loading ? <div className="loading"></div> : "Register"}
+          </button>
+        </form>
+        <div className="login-footer">
+          <p>Already have an account?</p>
+          <button
+            type="button"
+            className="link-btn"
+            onClick={() => setPage("login")}
+          >
+            Back to Login
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
 

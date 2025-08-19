@@ -599,3 +599,51 @@
       font-size: 2rem;
     }
   }
+
+  /* Alternative CSS for better alignment */
+.chart-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.chart-bars {
+  height: 100px;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  align-items: end;
+  margin-bottom: 1rem;
+  padding: 0 0.5rem;
+}
+
+.chart-bar-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.chart-bar {
+  width: 100%;
+  max-width: 16px;
+  background: var(--gradient-primary);
+  border-radius: 8px 8px 0 0;
+  min-height: 12px;
+  transition: all 0.2s ease;
+  margin: 0 auto;
+}
+
+.chart-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 0 0.5rem;
+  text-align: center;
+}
+
+.chart-day {
+  text-align: center;
+}

@@ -99,10 +99,6 @@ function Login({ setUser, setPage }) {
         >
         🚀 Quick Demo Access
         </button>
-
-        <div className="demo-credentials">
-          <small>Demo: Use any email and password</small>
-        </div>
       </div>
     </div>
   );

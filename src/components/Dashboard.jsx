@@ -5,6 +5,7 @@ import TransferFunds from "./TransferFunds";
 function Dashboard({ user = "User", balance = 25685, transactions = [], updateBalance, addTransaction }) {
   const [activePage, setActivePage] = useState("overview");
   const [showTransferModal, setShowTransferModal] = useState(false);
+  const [chartTab, setChartTab] = useState("day");
 
   // Sample dashboard transactions for the sidebar
   const dashboardTransactions = [
@@ -14,6 +15,19 @@ function Dashboard({ user = "User", balance = 25685, transactions = [], updateBa
     { initial: "N", name: "Nathan Riley", amount: "$3550.00", date: "10 March", color: "#f59e0b" },
     { initial: "M", name: "Maciej Kataska", amount: "$400.00", date: "10 March", color: "#ef4444" }
   ];
+
+  // Chart data for each tab
+  const chartData = {
+    day: [5, 8, 6, 9, 7, 8, 6],
+    week: [40, 38, 45, 50, 47, 42, 44],
+    month: [30, 32, 28, 35, 40, 38, 36, 39, 41, 37, 34, 33, 36, 38, 40, 42, 44, 43, 41, 39, 37, 35, 33, 32, 34, 36, 38, 40, 42, 44]
+  };
+
+  const chartLabels = {
+    day: ["Sat", "Sun", "Mon", "Tue", "Wed", "Thu", "Fri"],
+    week: ["W1", "W2", "W3", "W4", "W5", "W6", "W7"],
+    month: Array.from({ length: 30 }, (_, i) => (i + 1).toString())
+  };
 
   const handleTransfer = (transferData) => {
     // Add transaction to the list
@@ -69,17 +83,24 @@ function Dashboard({ user = "User", balance = 25685, transactions = [], updateBa
                     <h3>Balance History</h3>
                     <div className="chart-tabs">
                       <button className="active">Day</button>
-                      <button>Week</button>
-                      <button>Month</button>
                     </div>
                   </div>
-                  <div className="chart-bars">
-                    {[5,8,6,9,7,8,6].map((v,i) => (
-                      <div key={i} className="chart-bar" style={{height: 14 + v*7 + "px"}} />
-                    ))}
+                  <div className="chart-wrapper">
+                    <div className="chart-bars">
+                      {[5,8,6,9,7,8,6].map((v,i) => (
+                        <div key={i} className="chart-bar-container">
+                          <div className="chart-bar" style={{height: 14 + v*7 + "px"}} />
+                        </div>
+                      ))}
+                    </div>
                     <div className="chart-days">
-                      <span>Sat</span><span>Sun</span><span>Mon</span>
-                      <span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span>
+                      <span className="chart-day">Sat</span>
+                      <span className="chart-day">Sun</span>
+                      <span className="chart-day">Mon</span>
+                      <span className="chart-day">Tue</span>
+                      <span className="chart-day">Wed</span>
+                      <span className="chart-day">Thu</span>
+                      <span className="chart-day">Fri</span>
                     </div>
                   </div>
                 </div>
