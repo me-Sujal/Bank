@@ -1,11 +1,23 @@
 import React, { useState } from "react";
 import "./Dashboard.css";
 import TransferFunds from "./TransferFunds";
+import PaymentForm from "./PaymentForm"; // ← Add this line
 
 function Dashboard({ user = "User", balance = 25685, transactions = [], updateBalance, addTransaction }) {
   const [activePage, setActivePage] = useState("overview");
   const [showTransferModal, setShowTransferModal] = useState(false);
   const [chartTab, setChartTab] = useState("day");
+  const [notifications, setNotifications] = useState([]);
+  const [statements, setStatements] = useState([]);
+  const [paymentModal, setPaymentModal] = useState(null); // null or recipient string
+
+  const addNotification = (notification) => {
+    setNotifications(prev => [notification, ...prev]);
+  };
+
+  const addStatement = (statement) => {
+    setStatements(prev => [statement, ...prev]);
+  };
 
   // Sample dashboard transactions for the sidebar
   const dashboardTransactions = [
@@ -132,10 +144,10 @@ function Dashboard({ user = "User", balance = 25685, transactions = [], updateBa
                   {[
                     {icon: "💸", label: "Transfer", onClick: () => setShowTransferModal(true)},
                     {icon: "🏧", label: "Withdraw", onClick: () => alert("Withdraw feature coming soon!")},
-                    {icon: "🏠", label: "Pay Bills", onClick: () => alert("Bill pay feature coming soon!")},
-                    {icon: "⚡", label: "Utilities", onClick: () => alert("Utilities feature coming soon!")},
-                    {icon: "🎓", label: "Education", onClick: () => alert("Education payments coming soon!")},
-                    {icon: "💧", label: "Water", onClick: () => alert("Water bill feature coming soon!")},
+                    {icon: "🏠", label: "Pay Bills", onClick: () => setPaymentModal("bills")},
+                    {icon: "⚡", label: "Utilities", onClick: () => setPaymentModal("utilities")},
+                    {icon: "🎓", label: "Education", onClick: () => setPaymentModal("education")},
+                    {icon: "💧", label: "Water", onClick: () => setPaymentModal("water")},
                   ].map((action, idx) =>
                     <div className="action-card" key={idx} onClick={action.onClick}>
                       <div className="action-icon">{action.icon}</div>
@@ -247,6 +259,34 @@ function Dashboard({ user = "User", balance = 25685, transactions = [], updateBa
               </div>
             </div>
           </div>
+
+          <div className="sidebar-section">
+            <h3>Notifications</h3>
+            <div className="notifications-list">
+              {notifications.map((notif, idx) => (
+                <div key={notif.id || idx} className="notification-card">
+                  <div className="notification-title">{notif.title}</div>
+                  <div className="notification-message">{notif.message}</div>
+                  <div className="notification-date">{notif.date}</div>
+                </div>
+              ))}
+              {notifications.length === 0 && <div>No notifications yet</div>}
+            </div>
+          </div>
+
+          <div className="sidebar-section">
+            <h3>Statements</h3>
+            <div className="statements-list">
+              {statements.map((stmt, idx) => (
+                <div key={stmt.id || idx} className="statement-card">
+                  <div>{stmt.description}</div>
+                  <div>{stmt.date}</div>
+                  <div>{stmt.amount}</div>
+                </div>
+              ))}
+              {statements.length === 0 && <div>No statements yet</div>}
+            </div>
+          </div>
         </aside>
       </div>
 
@@ -265,8 +305,33 @@ function Dashboard({ user = "User", balance = 25685, transactions = [], updateBa
             </div>
             <TransferFunds 
               user={user} 
-              onTransfer={handleTransfer}
-              onCancel={() => setShowTransferModal(false)}
+              availableBalance={balance * 0.85}
+              updateBalance={updateBalance}
+              addTransaction={addTransaction}
+              addNotification={addNotification}
+              addStatement={addStatement}
+              onClose={() => setShowTransferModal(false)}
+            />
+          </div>
+        </div>
+      )}
+
+      {paymentModal && (
+        <div className="modal-overlay" onClick={() => setPaymentModal(null)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>Make Payment</h2>
+              <button className="close-btn" onClick={() => setPaymentModal(null)}>×</button>
+            </div>
+            <PaymentForm  // ← Change this from TransferFunds to PaymentForm
+              user={user} 
+              availableBalance={balance * 0.85}
+              paymentType={paymentModal}  // ← Add this prop
+              updateBalance={updateBalance}
+              addTransaction={addTransaction}
+              addNotification={addNotification}
+              addStatement={addStatement}
+              onClose={() => setPaymentModal(null)}
             />
           </div>
         </div>
