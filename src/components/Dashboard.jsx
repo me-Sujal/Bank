@@ -1,48 +1,28 @@
 import React, { useState } from "react";
 import "./Dashboard.css";
 import TransferFunds from "./TransferFunds";
-import PaymentForm from "./PaymentForm"; // ← Add this line
+import PaymentForm from "./PaymentForm";
 
-function Dashboard({ user = "User", balance = 25685, transactions = [], updateBalance, addTransaction }) {
+function Dashboard({ user = "User", balance = 25685, transactions = [], updateBalance, addTransaction, addNotification: addGlobalNotification }) {
   const [activePage, setActivePage] = useState("overview");
   const [showTransferModal, setShowTransferModal] = useState(false);
   const [chartTab, setChartTab] = useState("day");
-  const [notifications, setNotifications] = useState([]);
-  const [statements, setStatements] = useState([]);
-  const [paymentModal, setPaymentModal] = useState(null); // null or recipient string
+  const [paymentModal, setPaymentModal] = useState(null);
 
+  // Use the global notification function passed from parent
   const addNotification = (notification) => {
-    setNotifications(prev => [notification, ...prev]);
+    if (addGlobalNotification) {
+      addGlobalNotification(notification);
+    }
   };
 
+  // Keep statements locally for now (can be moved to global state later)
+  const [statements, setStatements] = useState([]);
   const addStatement = (statement) => {
     setStatements(prev => [statement, ...prev]);
   };
 
-  // Sample dashboard transactions for the sidebar
-  const dashboardTransactions = [
-    { initial: "B", name: "Balen Karmer", amount: "$250.00", date: "10 March", color: "var(--secondary-color)" },
-    { initial: "S", name: "Slava Kornilov", amount: "$150.00", date: "10 March", color: "var(--primary-color)" },
-    { initial: "K", name: "Kenny Coil", amount: "$1250.00", date: "10 March", color: "#8b5cf6" },
-    { initial: "N", name: "Nathan Riley", amount: "$3550.00", date: "10 March", color: "#f59e0b" },
-    { initial: "M", name: "Maciej Kataska", amount: "$400.00", date: "10 March", color: "#ef4444" }
-  ];
-
-  // Chart data for each tab
-  const chartData = {
-    day: [5, 8, 6, 9, 7, 8, 6],
-    week: [40, 38, 45, 50, 47, 42, 44],
-    month: [30, 32, 28, 35, 40, 38, 36, 39, 41, 37, 34, 33, 36, 38, 40, 42, 44, 43, 41, 39, 37, 35, 33, 32, 34, 36, 38, 40, 42, 44]
-  };
-
-  const chartLabels = {
-    day: ["Sat", "Sun", "Mon", "Tue", "Wed", "Thu", "Fri"],
-    week: ["W1", "W2", "W3", "W4", "W5", "W6", "W7"],
-    month: Array.from({ length: 30 }, (_, i) => (i + 1).toString())
-  };
-
   const handleTransfer = (transferData) => {
-    // Add transaction to the list
     const newTransaction = {
       id: Date.now(),
       type: 'debit',
@@ -66,6 +46,9 @@ function Dashboard({ user = "User", balance = 25685, transactions = [], updateBa
     }).format(amount);
   };
 
+  // Extract user display name
+  const userDisplayName = user.includes('@') ? user.split('@')[0] : user;
+
   return (
     <div className="dashboard-root">
       <div className="db-main-split">
@@ -74,7 +57,7 @@ function Dashboard({ user = "User", balance = 25685, transactions = [], updateBa
           {activePage === "overview" && (
             <>
               <div className="db-welcome">
-                <h1>Welcome back, {user.split('@')[0] || user}! 👋</h1>
+                <h1>Welcome back, {userDisplayName}! 👋</h1>
                 <p>Here's what's happening with your account today.</p>
               </div>
 
@@ -204,15 +187,15 @@ function Dashboard({ user = "User", balance = 25685, transactions = [], updateBa
           )}
         </div>
 
-        {/* Sidebar */}
+        {/* Simplified Sidebar - Removed Notifications and Statements */}
         <aside className="db-sidebar">
           <div className="sidebar-header">
             <div className="user-info">
               <div className="user-avatar">
-                {user.charAt(0).toUpperCase()}
+                {userDisplayName.charAt(0).toUpperCase()}
               </div>
               <div>
-                <div className="user-name">{user.split('@')[0] || user}</div>
+                <div className="user-name">{userDisplayName}</div>
                 <div className="user-email">{user}</div>
               </div>
             </div>
@@ -246,6 +229,36 @@ function Dashboard({ user = "User", balance = 25685, transactions = [], updateBa
 
           <div className="sidebar-section">
             <div className="section-header">
+              <h3>My Bank Accounts</h3>
+              <button className="add-card-btn">+</button>
+            </div>
+            <div className="bank-accounts-list">
+              <div className="bank-account-item">
+                <div className="account-icon">🏛️</div>
+                <div className="account-details">
+                  <div className="account-name">{userDisplayName} - Checking</div>
+                  <div className="account-balance">{formatCurrency(balance * 0.6)}</div>
+                </div>
+              </div>
+              <div className="bank-account-item">
+                <div className="account-icon">💰</div>
+                <div className="account-details">
+                  <div className="account-name">{userDisplayName} - Savings</div>
+                  <div className="account-balance">{formatCurrency(balance * 0.3)}</div>
+                </div>
+              </div>
+              <div className="bank-account-item">
+                <div className="account-icon">🏢</div>
+                <div className="account-details">
+                  <div className="account-name">{userDisplayName} - Business</div>
+                  <div className="account-balance">{formatCurrency(balance * 0.1)}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="sidebar-section">
+            <div className="section-header">
               <h3>Payment Cards</h3>
               <button className="add-card-btn">+</button>
             </div>
@@ -254,37 +267,9 @@ function Dashboard({ user = "User", balance = 25685, transactions = [], updateBa
                 <div className="card-chip">💳</div>
                 <div className="card-type">VISA</div>
                 <div className="card-number">•••• •••• •••• 4521</div>
-                <div className="card-holder">{user.split('@')[0] || user}</div>
+                <div className="card-holder">{userDisplayName}</div>
                 <div className="card-expiry">12/27</div>
               </div>
-            </div>
-          </div>
-
-          <div className="sidebar-section">
-            <h3>Notifications</h3>
-            <div className="notifications-list">
-              {notifications.map((notif, idx) => (
-                <div key={notif.id || idx} className="notification-card">
-                  <div className="notification-title">{notif.title}</div>
-                  <div className="notification-message">{notif.message}</div>
-                  <div className="notification-date">{notif.date}</div>
-                </div>
-              ))}
-              {notifications.length === 0 && <div>No notifications yet</div>}
-            </div>
-          </div>
-
-          <div className="sidebar-section">
-            <h3>Statements</h3>
-            <div className="statements-list">
-              {statements.map((stmt, idx) => (
-                <div key={stmt.id || idx} className="statement-card">
-                  <div>{stmt.description}</div>
-                  <div>{stmt.date}</div>
-                  <div>{stmt.amount}</div>
-                </div>
-              ))}
-              {statements.length === 0 && <div>No statements yet</div>}
             </div>
           </div>
         </aside>
@@ -304,7 +289,7 @@ function Dashboard({ user = "User", balance = 25685, transactions = [], updateBa
               </button>
             </div>
             <TransferFunds 
-              user={user} 
+              user={userDisplayName} 
               availableBalance={balance * 0.85}
               updateBalance={updateBalance}
               addTransaction={addTransaction}
@@ -323,10 +308,10 @@ function Dashboard({ user = "User", balance = 25685, transactions = [], updateBa
               <h2>Make Payment</h2>
               <button className="close-btn" onClick={() => setPaymentModal(null)}>×</button>
             </div>
-            <PaymentForm  // ← Change this from TransferFunds to PaymentForm
-              user={user} 
+            <PaymentForm
+              user={userDisplayName} 
               availableBalance={balance * 0.85}
-              paymentType={paymentModal}  // ← Add this prop
+              paymentType={paymentModal}
               updateBalance={updateBalance}
               addTransaction={addTransaction}
               addNotification={addNotification}

@@ -21,6 +21,8 @@ function PaymentForm({
 }) {
   const [amount, setAmount] = useState("");
   const [fromAccount, setFromAccount] = useState("");
+  const [showPinEntry, setShowPinEntry] = useState(false);
+  const [enteredPin, setEnteredPin] = useState("");
   const [otpSent, setOtpSent] = useState(false);
   const [generatedOtp, setGeneratedOtp] = useState("");
   const [enteredOtp, setEnteredOtp] = useState("");
@@ -44,8 +46,24 @@ function PaymentForm({
     }
   };
 
-  const handleTransfer = e => {
+  const handleInitialSubmit = e => {
     e.preventDefault();
+    setShowPinEntry(true);
+    setEnteredPin("");
+  };
+
+  const handlePinSubmit = e => {
+    e.preventDefault();
+    
+    // Simple PIN validation (you can customize this logic)
+    if (enteredPin.length !== 4 || !/^\d{4}$/.test(enteredPin)) {
+      alert("Please enter a valid 4-digit PIN.");
+      return;
+    }
+
+    // In a real app, you would verify the PIN against stored user PIN
+    // For demo purposes, we'll accept any 4-digit PIN
+    // Generate OTP after successful PIN verification
     const otp = Math.floor(1000 + Math.random() * 9000).toString();
     setGeneratedOtp(otp);
     setOtpSent(true);
@@ -88,26 +106,36 @@ function PaymentForm({
       } else {
         alert(`Paid $${amt} to ${recipient}`);
       }
+      // Reset form
       setAmount("");
       setFromAccount("");
+      setShowPinEntry(false);
       setOtpSent(false);
       setGeneratedOtp("");
       setEnteredOtp("");
+      setEnteredPin("");
       if (onClose) onClose();
     } else {
       alert("Incorrect OTP. Please try again.");
     }
   };
 
+  const handlePinChange = (e) => {
+    const value = e.target.value.replace(/\D/g, ''); // Only allow digits
+    if (value.length <= 4) {
+      setEnteredPin(value);
+    }
+  };
+
   return (
     <div className="tfund-root">
-      <form className="tfund-form" onSubmit={otpSent ? handleOtpSubmit : handleTransfer}>
+      <form className="tfund-form" onSubmit={otpSent ? handleOtpSubmit : (showPinEntry ? handlePinSubmit : handleInitialSubmit)}>
         <div className="tfund-title">
           <span className="tfund-icon">💸</span> <span className="tfund-bank">Payment</span>
         </div>
         <div className="tfund-subtitle">Pay to: <b>{recipient}</b></div>
         
-        {!otpSent && (
+        {!showPinEntry && !otpSent && (
           <>
             <div className="tfund-amount-label">Amount</div>
             <div className="tfund-amount-row">
@@ -117,7 +145,6 @@ function PaymentForm({
                 type="number"
                 min="0"
                 max={availableBalance}
-                step="0.01"
                 placeholder="0.00"
                 value={amount}
                 onChange={e => setAmount(e.target.value)}
@@ -139,7 +166,26 @@ function PaymentForm({
             </select>
 
             <button className="tfund-button" type="submit">
-              Send OTP →
+              Continue →
+            </button>
+          </>
+        )}
+
+        {showPinEntry && !otpSent && (
+          <>
+            <div className="tfund-amount-label">Enter your 4-digit PIN</div>
+            <input
+              className="tfund-amount"
+              type="password"
+              maxLength={4}
+              placeholder="Enter PIN"
+              value={enteredPin}
+              onChange={handlePinChange}
+              required
+              style={{ textAlign: 'center', fontSize: '18px', letterSpacing: '4px' }}
+            />
+            <button className="tfund-button" type="submit">
+              Verify PIN & Send OTP →
             </button>
           </>
         )}
@@ -163,7 +209,7 @@ function PaymentForm({
         )}
 
         <div className="tfund-note">
-          By clicking Pay, I authorize Bank to initiate the transaction detailed above.
+          By clicking {!showPinEntry ? 'Continue' : (otpSent ? 'Confirm Payment' : 'Verify PIN')}, I authorize Bank to initiate the transaction detailed above.
         </div>
       </form>
     </div>

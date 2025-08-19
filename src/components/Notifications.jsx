@@ -1,8 +1,7 @@
-/* src/components/Notifications.jsx */
 import React, { useState, useEffect } from "react";
 import "./Notifications.css";
 
-function Notifications() {
+function Notifications({ notifications: externalNotifications = [] }) {
   const [notifications, setNotifications] = useState([]);
   const [filter, setFilter] = useState("all");
   const [loading, setLoading] = useState(false);
@@ -71,13 +70,48 @@ function Notifications() {
   ];
 
   useEffect(() => {
-    fetchNotifications();
-  }, []);
+    // Merge mock notifications with external notifications from transfers/payments
+    const allNotifications = [...mockNotifications];
+    
+    // Add external notifications (from transfers/payments) and mark them as transaction type
+    externalNotifications.forEach(extNotif => {
+      const notification = {
+        id: extNotif.id || Date.now() + Math.random(),
+        type: "transaction",
+        title: extNotif.title,
+        message: extNotif.message,
+        time: extNotif.date || "Just now",
+        read: false,
+        icon: extNotif.title.includes("Transfer") ? "💸" : 
+              extNotif.title.includes("Payment") ? "💳" : "💰",
+        priority: "medium"
+      };
+      allNotifications.unshift(notification); // Add to beginning
+    });
+    
+    setNotifications(allNotifications);
+  }, [externalNotifications]);
 
   const fetchNotifications = async () => {
     setLoading(true);
     setTimeout(() => {
-      setNotifications(mockNotifications);
+      // Re-merge notifications
+      const allNotifications = [...mockNotifications];
+      externalNotifications.forEach(extNotif => {
+        const notification = {
+          id: extNotif.id || Date.now() + Math.random(),
+          type: "transaction",
+          title: extNotif.title,
+          message: extNotif.message,
+          time: extNotif.date || "Just now",
+          read: false,
+          icon: extNotif.title.includes("Transfer") ? "💸" : 
+                extNotif.title.includes("Payment") ? "💳" : "💰",
+          priority: "medium"
+        };
+        allNotifications.unshift(notification);
+      });
+      setNotifications(allNotifications);
       setLoading(false);
     }, 700);
   };
